@@ -75,7 +75,7 @@ infoTabell = strcat(infoTabell_1,strcat(infoTabell_2,infoTabell_3));
 %%
 clc
 %%%%%%%%%%%%%%%%%%%
-%    WRITE DATA   %
+%    SORT DATA   %
 %%%%%%%%%%%%%%%%%%%
 
 tr_long   = '<tr class="header">';
@@ -119,21 +119,58 @@ nrOfRows = nr_even + nr_odd;
 part_even = strfind(placeringsTabell,even);
 part_odd  = strfind(placeringsTabell,odd);
 
-for i = 1:nrOfRows/2
-    row = placeringsTabell(part_even(i):part_odd(i));
+
+td = '<td';
+bstd = '</td>';
+right = '>';
+left = '<';
+
+for i = 1:(nrOfRows/2)
+    part_row = placeringsTabell(part_even(i):part_odd(i));
     
     if eq(i,nrOfRows/2)
-        end_idx = strfind(placeringsTabell(part_odd(i):end),bstr);
-        end_idx = part_odd(i) + end_idx(1) + 4;
-        row = placeringsTabell(part_odd(i):end_idx);
+        rowEnd_idx = strfind(placeringsTabell(part_odd(i):end),bstr);
+        rowEnd_idx = part_odd(i) + rowEnd_idx(1) + 4;
+        part_row = placeringsTabell(part_odd(i):rowEnd_idx);
     end
     
-    col = strfind(row,'<td');
+    part_col = strfind(part_row,td);
     
-    for j = 1:length(col)
-        cellVal = row(col(j):col(j+1)) 
+    for j = 1:length(part_col)
+        if eq(j,8)
+            cell_start = part_col(j) + length(td);
+            cell_end   = cell_start + strfind(part_row(cell_start:end),bstd);
+        else
+            cell_start = part_col(j) + length(td);
+            cell_end   = part_col(j+1) - 2*length(bstd);
+        end
+        
+        % if eq(j,or(2,or(3,or(4,
+        idx_start = strfind(part_row(cell_start:cell_end),right);
+        idx_start = cell_start + idx_start;
+        idx_end   = strfind(part_row(idx_start:cell_end),left) - 2*length(left);
+        idx_end   = idx_start + idx_end(1);
+        
+        
+        if or(length(idx_start)>1,length(idx_end)<1)
+            j
+        else
+            cellVal = part_row(idx_start:idx_end)
+            part_row(cell_start:cell_end);
+        end
+        
+        
+        
+        %         if eq(j,length(part_col))
+        %             colEnd_idx = strfind(row(part_col(j):end),'</td>');
+        %             colEnd_idx = part_col(j) + colEnd_idx(1) + 3;
+        %             cellVal    = row(part_col(j):colEnd_idx);
+        %         else
+        %             cellVal = row(part_col(j):part_col(j+1))
+        %         end
     end
+    break
     
 end
-row;
+idx_start;
 
